@@ -61,7 +61,21 @@ Turn earned **Focus Gems 💎** and **Streaks 🔥** into tangible rewards:
 
 ---
 
-## 🚀 Quickstart & Installation
+## 🚀 Deployment on Render / Cloud
+
+FocusFlow AI is optimized for 1-click cloud deployment on **Render**:
+
+### Render Web Service Configuration:
+- **Environment**: `Python`
+- **Build Command**: `pip install -r requirements.txt`
+- **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT` (or `python main.py`)
+- **Main Entrypoint**: `main.py` (Exposes `app` directly at root)
+
+Alternatively, connect your repository to Render using the included `render.yaml` Blueprint!
+
+---
+
+## 💻 Local Quickstart
 
 ### 1. Clone the Repository
 ```bash
@@ -71,13 +85,14 @@ cd Focus-Flow-AI
 
 ### 2. Install Dependencies
 ```bash
-pip install fastapi uvicorn scikit-learn numpy scipy opencv-python google-genai
+pip install -r requirements.txt
 ```
 
 ### 3. Launch the Server
 ```bash
-python server.py
+python main.py
 ```
+*(or `python server.py`)*
 
 Open your browser and navigate to:
 ```
