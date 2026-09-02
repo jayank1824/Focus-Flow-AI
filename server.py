@@ -21,6 +21,8 @@ def main():
     print(f"[FocusFlow AI] Starting Python AI/ML Platform...")
     print(f"[FocusFlow AI] URL: http://localhost:{port}")
     print(f"[FocusFlow AI] Workspace: {CURRENT_DIR}")
+    if os.environ.get("GEMINI_API_KEY"):
+        print("[FocusFlow AI] Gemini API Key: Active in environment")
     print("=" * 65)
 
     uvicorn.run(

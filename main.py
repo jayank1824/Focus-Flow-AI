@@ -31,6 +31,8 @@ if __name__ == "__main__":
     print("=" * 65)
     print("[FocusFlow AI] Cloud & Local Web Application Server")
     print(f"[FocusFlow AI] Running on http://{host}:{port}")
+    if os.environ.get("GEMINI_API_KEY"):
+        print("[FocusFlow AI] Gemini API Key: Configured via environment variable")
     print("=" * 65)
 
     uvicorn.run(

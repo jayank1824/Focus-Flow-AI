@@ -290,6 +290,15 @@ const FocusStorage = {
       }
       this.set(this.KEYS.DAILY_STATS, stats);
     }
+
+    if (!this.get(this.KEYS.SETTINGS)) {
+      this.set(this.KEYS.SETTINGS, {
+        geminiApiKey: '',
+        geminiKeyName: 'Focus Flow api key',
+        autoSpeechReadout: true,
+        proctorStrictness: 'moderate'
+      });
+    }
   },
 
   get(key) {

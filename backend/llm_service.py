@@ -2,7 +2,7 @@
 FocusFlow AI - LLM & Generative Reasoning Service
 Connects RAG vector context with Gemini API / Neural Synthesis for:
 1. Timestamped Video Subpart Summarization
-2. Persona-Based Expert Tutoring
+2. Persona-Based Expert Tutoring (Feynman, Socratic, Strict, Coach)
 3. Practice Question Generation
 4. AI Virtual Interviewer Dialogue & Grading
 """
@@ -14,10 +14,21 @@ from backend.rag_engine import rag_engine
 
 class LLMService:
     def __init__(self):
-        self.api_key = os.environ.get("GEMINI_API_KEY", "")
+        self.api_key_name = os.environ.get("FOCUS_FLOW_API_KEY_NAME", "Focus Flow api key")
+        self.api_key = (
+            os.environ.get("GEMINI_API_KEY") or
+            os.environ.get("FOCUS_FLOW_GEMINI_KEY") or
+            os.environ.get("GEMINI_KEY") or
+            ""
+        )
 
     def set_api_key(self, key: str):
-        self.api_key = key
+        if key:
+            self.api_key = key
+            os.environ["GEMINI_API_KEY"] = key
+
+    def get_api_key(self) -> str:
+        return self.api_key
 
     def summarize_video_subpart(self, video_id: str, title: str, start_sec: int, end_sec: int,
                                 start_fmt: str, end_fmt: str) -> Dict[str, Any]:
@@ -57,7 +68,7 @@ class LLMService:
 
     def tutor_chat(self, user_query: str, persona: str = "feynman") -> Dict[str, Any]:
         """
-        Generates persona-based pedagogical response using RAG retrieval.
+        Generates persona-based pedagogical response using RAG retrieval and Gemini intelligence.
         """
         relevant_chunks = rag_engine.query(user_query, top_k=2)
         context_str = " ".join([c["text"] for c in relevant_chunks])
@@ -94,7 +105,9 @@ class LLMService:
             "response": response,
             "persona": persona,
             "rag_citations": [c.get("source_title") for c in relevant_chunks],
-            "confidence_score": 0.95
+            "confidence_score": 0.95,
+            "gemini_active": bool(self.api_key),
+            "key_name": self.api_key_name
         }
 
     def generate_practice_question(self, domain: str, topic: str) -> Dict[str, Any]:

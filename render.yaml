@@ -9,3 +9,7 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: FOCUS_FLOW_API_KEY_NAME
+        value: Focus Flow api key
+      - key: GEMINI_API_KEY
+        sync: false
