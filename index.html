@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FocusFlow AI - Adaptive Video Learning & Focus Mastery Platform</title>
+  <meta name="description" content="End-to-end Python AI/ML video learning platform with RAG, Computer Vision anti-slacking, Stacking Ensemble focus stretch prediction, Bayesian Knowledge Tracing stats, and proctored exams." />
+  
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+</head>
+<body>
+
+  <!-- ==========================================================================
+       Header & Focus HUD
+       ========================================================================== -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="#" class="brand-logo" onclick="App.switchView('streamer')">
+        <div class="brand-logo-icon">⚡</div>
+        <span>Focus<span class="brand-title-gradient">Flow</span> AI</span>
+      </a>
+
+      <div class="student-focus-hud">
+        <div class="hud-item" id="hud-streak-count" title="Consecutive daily focus streak">
+          6d Streak 🔥
+        </div>
+        <div class="hud-item hud-pill level" id="hud-level-badge">
+          Lvl 3
+        </div>
+        <div class="hud-item" id="hud-xp-count">
+          1,450 XP
+        </div>
+        <div class="hud-item" id="hud-gems-count">
+          85 💎
+        </div>
+        <div class="hud-item hud-pill stretch" id="hud-sitting-target" title="Adaptive sitting target (+15-30m beyond baseline)">
+          Stretch Goal: 35m (+15m)
+        </div>
+        <div class="presence-badge status-present" id="webcam-presence-indicator">
+          <span class="pulse-dot green"></span> In Seat & Focusing
+        </div>
+      </div>
+
+      <div class="header-actions" style="position: relative;">
+        <button class="btn btn-secondary btn-sm" onclick="App.openModal('survey-modal')">
+          📋 Survey
+        </button>
+        <button class="header-profile-btn" id="header-profile-btn" title="Student Profile & Wallet">
+          <span class="header-user-avatar" id="header-user-avatar">👨‍🎓</span>
+          <span class="header-user-name" id="header-user-name">Alex Rivera</span>
+          <span style="font-size: 0.7rem; color: var(--text-muted);">▼</span>
+        </button>
+
+        <!-- User Profile Dropdown Menu -->
+        <div class="profile-dropdown-menu" id="profile-dropdown-menu">
+          <div class="profile-user-summary">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+              <span style="font-size: 1.5rem;" id="dropdown-avatar">👨‍🎓</span>
+              <div>
+                <strong style="display: block; font-size: 0.95rem;" id="dropdown-name">Alex Rivera</strong>
+                <span style="font-size: 0.75rem; color: var(--cyan);" id="header-user-role">Computer Science & AI</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.75rem;">
+              <span class="hud-pill level" id="header-user-level">Lvl 3</span>
+              <span class="hud-pill stretch" id="header-user-streak">6d Streak 🔥</span>
+              <span class="hud-pill" style="border-color: var(--amber); color: var(--amber);" id="header-user-gems">85 💎</span>
+            </div>
+          </div>
+
+          <button class="profile-menu-item" onclick="App.switchView('rewards'); document.getElementById('profile-dropdown-menu').classList.remove('active');">
+            🎁 Rewards Marketplace & Perks
+          </button>
+          <button class="profile-menu-item" onclick="App.switchView('stats'); document.getElementById('profile-dropdown-menu').classList.remove('active');">
+            📊 Stats & Accuracy Breakdown
+          </button>
+          <button class="profile-menu-item" onclick="App.openModal('survey-modal'); document.getElementById('profile-dropdown-menu').classList.remove('active');">
+            📋 Adjust Focus Stretch Survey
+          </button>
+          <button class="profile-menu-item" onclick="App.openModal('settings-modal'); document.getElementById('profile-dropdown-menu').classList.remove('active');">
+            ⚙️ Platform Settings
+          </button>
+          <div style="border-top: 1px solid rgba(255,255,255,0.08); margin: 0.4rem 0;"></div>
+          <button class="profile-menu-item" onclick="AuthManager.openLoginModal('demo'); document.getElementById('profile-dropdown-menu').classList.remove('active');">
+            🔄 Switch Demo Account
+          </button>
+          <button class="profile-menu-item" style="color: var(--rose);" onclick="AuthManager.openLoginModal('login'); document.getElementById('profile-dropdown-menu').classList.remove('active');">
+            🔑 Login / Register
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       Navigation Bar
+       ========================================================================== -->
+  <nav class="app-nav-bar">
+    <div class="nav-container">
+      <button class="nav-tab-btn active" data-view="streamer">
+        🎥 Video Streamer & Slicer
+      </button>
+      <button class="nav-tab-btn" data-view="rewards">
+        🎁 Rewards Store & Perks
+      </button>
+      <button class="nav-tab-btn" data-view="stats">
+        📊 Stats & Growth Hub
+      </button>
+      <button class="nav-tab-btn" data-view="sources">
+        📚 Knowledge Hub (RAG)
+      </button>
+      <button class="nav-tab-btn" data-view="tutor">
+        🤖 AI Voice Tutor & Doubts
+      </button>
+      <button class="nav-tab-btn" data-view="flashcards">
+        🗂️ 3D Flashcards (Spaced Repetition)
+      </button>
+      <button class="nav-tab-btn" data-view="mindmap">
+        🧠 Concept Mind Map
+      </button>
+      <button class="nav-tab-btn" data-view="practice">
+        🎯 Practice & Unsolved Ledger
+      </button>
+      <button class="nav-tab-btn" data-view="exam">
+        🛡️ Proctored Test (Anti-Cheat)
+      </button>
+      <button class="nav-tab-btn" data-view="avatar">
+        🎙️ AI Avatar Interviewer
+      </button>
+      <button class="nav-tab-btn" data-view="groups">
+        👥 Study Groups (8-10 Voice Mesh)
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==========================================================================
+       Main Viewport Container
+       ========================================================================== -->
+  <main class="app-main">
+
+    <!-- ==========================================================================
+         VIEW 1: Video Streamer & Dual-Keyframe Subpart Slicer
+         ========================================================================== -->
+    <section class="view-section active" id="view-streamer">
+      
+      <!-- Active Sprint Progress HUD -->
+      <div class="active-sprint-hud" id="active-sprint-hud"></div>
+
+      <div class="streamer-layout-grid">
+        
+        <!-- Left: YouTube Player & Range Slicer -->
+        <div class="streamer-main-column">
+          <div class="video-player-wrapper">
+            <div class="video-frame-container" id="yt-player-container">
+              <!-- YouTube IFrame or Fallback Canvas loads here -->
+            </div>
+
+            <!-- Anti-Slacking Stood-Up Warning Overlay -->
+            <div class="slacking-overlay" id="slacking-warning-overlay">
+              <div class="slacking-icon">⚠️</div>
+              <h2>Student Stood Up / Empty Desk Detected!</h2>
+              <p>Your focus sprint timer and XP rewards have been <strong>paused</strong>. Please return to your seat and face the screen to resume.</p>
+              <div style="margin-top: 1rem;">
+                <button class="btn btn-secondary btn-sm" onclick="WebcamProctor.toggleSimulatedPresence(true)">
+                  I am Back in My Seat ➔
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dual Keyframe Slicer Range HUD -->
+          <div class="keyframe-slicer-panel">
+            <div class="slicer-header-row">
+              <h4>✂️ Keyframe Subpart Slicer (Custom AI Slice Selection)</h4>
+              <span class="duration-badge" id="keyframe-duration-badge">Selected Slice: 16 mins (12:30 - 28:45)</span>
+            </div>
+
+            <!-- Dual Range Sliders -->
+            <div class="dual-slider-track-container">
+              <div class="range-track-bg"></div>
+              <div class="range-highlight" id="keyframe-range-highlight" style="left: 20%; width: 28%;"></div>
+              <input type="range" class="keyframe-range-input" id="keyframe-start-slider" min="0" max="3600" value="750" />
+              <input type="range" class="keyframe-range-input" id="keyframe-end-slider" min="0" max="3600" value="1725" />
+            </div>
+
+            <div class="slicer-time-inputs">
+              <div class="time-input-group">
+                <label>Keyframe Start:</label>
+                <input type="text" class="time-input-field" id="keyframe-start-input" value="12:30" />
+              </div>
+
+              <button class="btn btn-primary btn-sm" onclick="YouTubeStreamer.openSubpartActionCard()">
+                ⚡ Analyze Selected Subpart with RAG AI
+              </button>
+
+              <div class="time-input-group">
+                <label>Keyframe End:</label>
+                <input type="text" class="time-input-field" id="keyframe-end-input" value="28:45" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Subpart AI Action Dropdown / Drawer -->
+          <div class="subpart-action-drawer" id="subpart-ai-action-drawer">
+            <div class="slicer-header-row">
+              <h4 id="subpart-range-title">⚡ Subpart AI Engine: [12:30 - 28:45]</h4>
+              <button class="btn btn-secondary btn-sm" onclick="document.getElementById('subpart-ai-action-drawer').classList.remove('active')">&times; Close</button>
+            </div>
+            <div id="subpart-ai-content">
+              <!-- Generated summary and buttons populate here -->
+            </div>
+          </div>
+
+          <!-- Curated Keyframes List -->
+          <div class="keyframe-slicer-panel" style="margin-top: 1.5rem;">
+            <div class="slicer-header-row">
+              <h4>📑 Curated Video Chapters & Topic Milestones</h4>
+            </div>
+            <div id="curated-keyframes-list"></div>
+          </div>
+        </div>
+
+        <!-- Right: Adaptive Focus Stretch Milestones & Webcam Proctor HUD -->
+        <div class="streamer-sidebar">
+          
+          <!-- Adaptive Milestones Card (+15 to +30 min Stretch) -->
+          <div class="adaptive-milestones-card" id="video-adaptive-milestones-list">
+            <!-- Dynamic milestones injected here -->
+          </div>
+
+          <!-- Real-Time Webcam Anti-Slacking Guardian Box -->
+          <div class="webcam-guardian-card">
+            <div class="slicer-header-row">
+              <h4 style="color: var(--emerald);">📷 Computer Vision Proctor</h4>
+              <span class="badge-pill active" id="camera-guardian-status">Guardian Active 🟢</span>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              Python OpenCV & WebRTC presence guardian. Evaluates head pose, gaze deviation, and empty desk.
+            </p>
+
+            <div class="webcam-hud-content">
+              <div class="webcam-feed-preview">
+                <video id="webcam-video-feed" playsinline muted autoplay></video>
+                <canvas id="webcam-analysis-canvas" width="160" height="120" style="display:none;"></canvas>
+                <div class="webcam-live-overlay">Live Desk Presence Active</div>
+              </div>
+
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="WebcamProctor.startWebcam()">
+                  🎥 Turn On Camera
+                </button>
+                <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="WebcamProctor.toggleSimulatedPresence()">
+                  🔄 Test Stand-Up Alert
+                </button>
+              </div>
+
+              <div class="audit-log-box" id="proctor-audit-log-list">
+                <li class="audit-item"><span class="audit-time">[Python CV]</span> OpenCV Presence Guardian Active.</li>
+              </div>
+
+              <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                <strong>Recent Proctor Snapshots:</strong>
+              </div>
+              <div class="snapshot-gallery-grid" id="proctor-snapshots-container"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 2: STUDENT REWARDS MARKETPLACE & STREAK WALLET
+         ========================================================================== -->
+    <section class="view-section" id="view-rewards">
+      <div class="sources-hub-header">
+        <div>
+          <h2>🎁 Student Rewards Marketplace & Streak Wallet</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Turn verified sitting focus hours and consecutive streaks into real-world discounts on travel, free movie tickets, cafe study fuel, Amazon tech vouchers, and AI subscriptions.
+          </p>
+        </div>
+        <div class="sources-controls">
+          <button class="btn btn-secondary btn-sm" onclick="document.getElementById('claimed-vouchers-section').scrollIntoView({ behavior: 'smooth' });">
+            🎟️ View My Active Vouchers
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="App.switchView('streamer')">
+            ⚡ Complete Sprints to Earn Gems
+          </button>
+        </div>
+      </div>
+
+      <!-- Student Wallet Status Bar -->
+      <div class="rewards-hero-wallet">
+        <div class="rewards-wallet-card">
+          <div class="wallet-card-icon" style="color: var(--amber); border-color: rgba(246, 211, 101, 0.3);">💎</div>
+          <div class="wallet-card-info">
+            <span class="wallet-val text-amber" id="rewards-hero-gems">85 💎</span>
+            <span class="wallet-lbl">Available Focus Gems</span>
+          </div>
+        </div>
+
+        <div class="rewards-wallet-card">
+          <div class="wallet-card-icon" style="color: var(--rose); border-color: rgba(255, 75, 114, 0.3);">🔥</div>
+          <div class="wallet-card-info">
+            <span class="wallet-val text-rose" id="rewards-hero-streak">6 Days 🔥</span>
+            <span class="wallet-lbl">Active Daily Streak</span>
+          </div>
+        </div>
+
+        <div class="rewards-wallet-card">
+          <div class="wallet-card-icon" style="color: var(--cyan); border-color: rgba(0, 242, 254, 0.3);">⚡</div>
+          <div class="wallet-card-info">
+            <span class="wallet-val text-cyan" id="rewards-hero-xp">1,450 XP</span>
+            <span class="wallet-lbl">Focus Stamina XP</span>
+          </div>
+        </div>
+
+        <div class="rewards-wallet-card">
+          <div class="wallet-card-icon" style="color: var(--emerald); border-color: rgba(0, 245, 160, 0.3);">🎟️</div>
+          <div class="wallet-card-info">
+            <span class="wallet-val text-emerald" id="rewards-hero-claimed-count">1 Voucher</span>
+            <span class="wallet-lbl">Claimed Active Perks</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Navigation Filter -->
+      <div class="rewards-category-nav">
+        <button class="reward-cat-btn active" data-cat="all" onclick="RewardsStore.setCategory('all')">
+          🌐 All Perks & Vouchers
+        </button>
+        <button class="reward-cat-btn" data-cat="travel" onclick="RewardsStore.setCategory('travel')">
+          ✈️ Travel & Commute (Flights / Uber)
+        </button>
+        <button class="reward-cat-btn" data-cat="movies" onclick="RewardsStore.setCategory('movies')">
+          🎬 Cinema & Entertainment (IMAX / Spotify)
+        </button>
+        <button class="reward-cat-btn" data-cat="cafes" onclick="RewardsStore.setCategory('cafes')">
+          ☕ Cafes & Study Fuel (Starbucks / Blue Tokai)
+        </button>
+        <button class="reward-cat-btn" data-cat="shopping" onclick="RewardsStore.setCategory('shopping')">
+          🛍️ Shopping & Tech (Amazon / Headphones)
+        </button>
+        <button class="reward-cat-btn" data-cat="ai_perks" onclick="RewardsStore.setCategory('ai_perks')">
+          🚀 AI & Academic Grants (Gemini / Cloud)
+        </button>
+      </div>
+
+      <!-- Rewards Catalog Cards Grid -->
+      <div class="rewards-catalog-grid" id="rewards-catalog-grid">
+        <!-- Rendered dynamically by js/rewardsStore.js -->
+      </div>
+
+      <!-- My Claimed Vouchers Wallet Drawer -->
+      <div class="stats-card-box" id="claimed-vouchers-section" style="margin-top: 2rem;">
+        <div class="slicer-header-row">
+          <h4>🎟️ My Claimed Rewards & Active Promo Codes</h4>
+          <span class="hud-pill stretch">Instant 1-Click Copy</span>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Present these promo codes or barcodes at checkout with our student partner brands.
+        </p>
+
+        <div class="claimed-vouchers-grid" id="claimed-vouchers-container">
+          <!-- Rendered dynamically by js/rewardsStore.js -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 3: DEDICATED STATS & GROWTH HUB (Correct/Incorrect & Watching Growth)
+         ========================================================================== -->
+    <section class="view-section" id="view-stats">
+      <div class="sources-hub-header">
+        <div>
+          <h2>📊 Student Stats & Growth Analytics Hub</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Real-time Bayesian Knowledge Tracing (BKT) accuracy tracking, question mastery ledger, and 14-day watching growth curves.
+          </p>
+        </div>
+        <div class="sources-controls">
+          <button class="btn btn-primary btn-sm" onclick="AnalyticsEngine.init()">
+            🔄 Refresh ML Stats
+          </button>
+        </div>
+      </div>
+
+      <!-- Top Stats Hero Cards -->
+      <div class="stats-hero-grid">
+        <div class="stat-metric-card">
+          <span class="stat-val text-cyan" id="stat-hero-total-q">29</span>
+          <span class="stat-lbl">Total Questions Solved</span>
+        </div>
+        <div class="stat-metric-card">
+          <span class="stat-val text-green" id="stat-hero-accuracy">79.3%</span>
+          <span class="stat-lbl">Overall Accuracy Rate</span>
+        </div>
+        <div class="stat-metric-card">
+          <span class="stat-val text-emerald" id="stat-hero-correct">23 ✅</span>
+          <span class="stat-lbl">Mastered Correct Questions</span>
+        </div>
+        <div class="stat-metric-card">
+          <span class="stat-val text-rose" id="stat-hero-incorrect">6 ❌</span>
+          <span class="stat-lbl">Unsolved / Review Required</span>
+        </div>
+      </div>
+
+      <!-- Split Grid: Question Accuracy Breakdown vs Watching Growth -->
+      <div class="stats-split-grid">
+        
+        <!-- Left: Question Performance & Accuracy Breakdown -->
+        <div class="stats-card-box">
+          <div class="slicer-header-row">
+            <h4>🎯 Question Accuracy Breakdown (Correct vs Incorrect)</h4>
+            <span class="hud-pill level">Bayesian Knowledge Traced</span>
+          </div>
+
+          <div class="donut-chart-container">
+            <div class="donut-canvas-wrap">
+              <canvas id="questions-accuracy-donut-canvas" width="170" height="170"></canvas>
+              <div class="donut-center-stat">
+                <span class="pct" id="donut-center-pct">79%</span>
+                <span class="lbl">Accuracy</span>
+              </div>
+            </div>
+
+            <div class="donut-legend-list">
+              <div class="legend-item">
+                <span class="legend-color-dot correct"></span>
+                <strong id="legend-correct-count">23 Correct (79%)</strong>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color-dot incorrect"></span>
+                <strong id="legend-incorrect-count">6 Incorrect (21%)</strong>
+              </div>
+              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">
+                Model: <em>P(L_t) Bayesian Posterior Mastery</em>
+              </p>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.25rem;">
+            <h4 style="font-size: 0.9rem; margin-bottom: 0.75rem;">Topic Accuracy & Skill Mastery:</h4>
+            <div id="topic-accuracy-bars-container"></div>
+          </div>
+        </div>
+
+        <!-- Right: 14-Day Watching & Sitting Growth -->
+        <div class="stats-card-box">
+          <div class="slicer-header-row">
+            <h4>📈 Watching Hours & Sitting Stamina Growth</h4>
+            <span class="hud-pill stretch">14-Day Trajectory</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Blue Bars: Watched Lecture Hours | Cyan Line: Sitting Endurance Duration (mins)
+          </p>
+
+          <canvas id="watching-growth-canvas" style="width: 100%; height: 220px;"></canvas>
+
+          <!-- ML Focus Stretch & Fatigue Predictor Badge -->
+          <div id="ml-predictor-container"></div>
+        </div>
+
+      </div>
+
+      <!-- Full Width Question Attempt History & Re-attempt Table -->
+      <div class="stats-card-box">
+        <div class="slicer-header-row">
+          <h4>📑 Question History & Revision Ledger</h4>
+          <button class="btn btn-secondary btn-sm" onclick="App.switchView('practice')">
+            Go to Practice Arena ➔
+          </button>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+          Track your answers, Bayesian mastery probabilities, and re-attempt missed questions directly.
+        </p>
+
+        <div style="overflow-x: auto;">
+          <table class="question-history-table">
+            <thead>
+              <tr>
+                <th>Question Summary</th>
+                <th>Domain / Topic</th>
+                <th>Result</th>
+                <th>BKT Mastery Prob</th>
+                <th>Attempted</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="question-history-table-body">
+              <!-- Rendered by analytics.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 3: Knowledge Hub (NotebookLM RAG Multi-Source Feeding)
+         ========================================================================== -->
+    <section class="view-section" id="view-sources">
+      <div class="sources-hub-header">
+        <div>
+          <h2>📚 Multi-Source Knowledge Hub (RAG Engine)</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Vector space indexed YouTube lectures, research PDFs, Word docs, and notes.</p>
+        </div>
+        <div class="sources-controls">
+          <input type="text" class="search-input" placeholder="🔍 RAG Vector Search..." oninput="KnowledgeHub.state.searchQuery = this.value; KnowledgeHub.renderSourcesList();" />
+          <button class="btn btn-primary" onclick="App.openModal('add-source-modal')">
+            + Add New Resource
+          </button>
+        </div>
+      </div>
+
+      <div class="sources-grid" id="sources-grid-container">
+        <!-- Sources cards rendered by knowledgeHub.js -->
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 4: AI Voice Tutor & Doubts
+         ========================================================================== -->
+    <section class="view-section" id="view-tutor">
+      <div class="tutor-layout">
+        
+        <!-- Persona Sidebar -->
+        <div class="tutor-sidebar">
+          <div class="slicer-header-row">
+            <h4>🎭 AI Teaching Persona</h4>
+          </div>
+          <div class="persona-list">
+            <button class="persona-btn active" onclick="AITutor.setPersona('feynman'); document.querySelectorAll('.persona-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+              🧪 Feynman (ELI5 Analogies)
+            </button>
+            <button class="persona-btn" onclick="AITutor.setPersona('socratic'); document.querySelectorAll('.persona-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+              🏛️ Socratic Teacher
+            </button>
+            <button class="persona-btn" onclick="AITutor.setPersona('strict'); document.querySelectorAll('.persona-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+              🎯 Strict Exam Grader
+            </button>
+            <button class="persona-btn" onclick="AITutor.setPersona('coach'); document.querySelectorAll('.persona-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+              ⚡ Focus & Sitting Coach
+            </button>
+          </div>
+
+          <div style="margin-top: auto; font-size: 0.8rem; color: var(--text-muted);">
+            <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+              <input type="checkbox" id="tutor-auto-speak-toggle" checked /> Auto Voice Readout 🔊
+            </label>
+          </div>
+        </div>
+
+        <!-- Main Chat Box -->
+        <div class="tutor-main-chat">
+          <div class="tutor-chat-header">
+            <div>
+              <span class="hud-pill level" id="active-persona-badge">🧪 Feynman (ELI5 Analogies)</span>
+              <span style="font-size: 0.85rem; color: var(--text-secondary); margin-left: 0.5rem;">Python RAG & Multimodal Reasoning</span>
+            </div>
+            
+            <div class="tutor-voice-visualizer" id="tutor-voice-visualizer" title="AI Speech Audio Visualizer">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+
+          <div class="tutor-messages-container" id="tutor-messages-container"></div>
+
+          <div id="tutor-typing-indicator" style="display: none; padding: 0.5rem 1.5rem; font-size: 0.82rem; color: var(--cyan);">
+            🤖 AI Tutor is retrieving RAG context & reasoning...
+          </div>
+
+          <div class="tutor-chat-dock">
+            <button class="btn-mic" id="tutor-mic-btn" onclick="AITutor.toggleSpeechToText()" title="Click to speak your doubt">
+              🎤
+            </button>
+            <input type="text" class="chat-input-field" id="tutor-chat-input" placeholder="Ask any concept doubt, paste video keyframe, or speak..." onkeydown="if(event.key === 'Enter') AITutor.sendMessage()" />
+            <button class="btn btn-primary" onclick="AITutor.sendMessage()">
+              Send ➔
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 5: 3D Flashcards (Spaced Repetition)
+         ========================================================================== -->
+    <section class="view-section" id="view-flashcards">
+      <div class="sources-hub-header">
+        <div>
+          <h2>🗂️ Interactive 3D Flashcards</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Leitner spaced repetition system. Generated from video keyframe slices and documents.</p>
+        </div>
+        <div class="sources-controls">
+          <select class="search-input" id="flashcard-deck-filter" onchange="FlashcardEngine.filterByDeck(this.value)"></select>
+          <button class="btn btn-primary btn-sm" onclick="App.openModal('add-card-modal')">
+            + New Card
+          </button>
+        </div>
+      </div>
+
+      <div class="flashcards-container" id="flashcard-interactive-stage"></div>
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 6: Concept Mind Map
+         ========================================================================== -->
+    <section class="view-section" id="view-mindmap">
+      <div class="sources-hub-header">
+        <div>
+          <h2>🧠 Interactive Concept Mind Map</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Zoomable hierarchy graph mapping deep learning nodes, loss functions, and system caching.</p>
+        </div>
+        <div class="sources-controls">
+          <button class="btn btn-secondary btn-sm" onclick="MindMapEngine.switchTopic('deep_learning')">
+            🧠 Deep Learning & Backprop
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="MindMapEngine.switchTopic('system_design')">
+            🏛️ Distributed Caching
+          </button>
+        </div>
+      </div>
+
+      <div class="mindmap-wrapper">
+        <div class="mindmap-controls-bar">
+          <button class="btn btn-secondary btn-sm" onclick="MindMapEngine.zoomIn()">🔍+ Zoom In</button>
+          <button class="btn btn-secondary btn-sm" onclick="MindMapEngine.zoomOut()">🔍- Zoom Out</button>
+          <button class="btn btn-secondary btn-sm" onclick="MindMapEngine.resetView()">🎯 Reset View</button>
+        </div>
+
+        <canvas id="mindmap-canvas"></canvas>
+
+        <div class="mindmap-node-inspector" id="mindmap-node-info">
+          <div class="node-info-card">
+            <h4>💡 Click Any Node to Inspect</h4>
+            <p>Click on any concept branch or keyframe node to view deep equations and ask the AI tutor.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 7: Practice Arena & Unsolved Revision Ledger
+         ========================================================================== -->
+    <section class="view-section" id="view-practice">
+      <div class="sources-hub-header">
+        <div>
+          <h2>🎯 Practice Arena & Unsolved Revision Ledger</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Topic-categorized questions synced with Python Bayesian Knowledge Tracing.</p>
+        </div>
+        <div class="sources-controls">
+          <select class="search-input" id="practice-domain-filter" onchange="PracticeHub.state.selectedDomain = this.value; PracticeHub.renderQuestionFeed();"></select>
+          <button class="btn btn-secondary btn-sm" id="toggle-unsolved-btn" onclick="PracticeHub.toggleUnsolvedFilter()">
+            🎯 Showing All Questions
+          </button>
+          <span class="badge-pill warning" id="unsolved-questions-badge">2 Unsolved</span>
+        </div>
+      </div>
+
+      <div class="practice-feed" id="practice-questions-list"></div>
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 8: Proctored Exam (Anti-Cheat Suite)
+         ========================================================================== -->
+    <section class="view-section" id="view-exam">
+      <div id="exam-view-container"></div>
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 9: AI Avatar Interviewer
+         ========================================================================== -->
+    <section class="view-section" id="view-avatar">
+      <div class="sources-hub-header">
+        <div>
+          <h2>🎙️ AI Virtual Interviewer with Animated Avatar</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Realistic mock interview with animated lip-syncing 3D avatar, live mic speech, and AI rubric scorecard.</p>
+        </div>
+        <div class="sources-controls">
+          <button class="btn btn-secondary btn-sm" onclick="AvatarInterviewer.startInterview('ml_engineer')">
+            🧪 ML Engineer Track
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="AvatarInterviewer.startInterview('system_architect')">
+            🏛️ System Architect Track
+          </button>
+        </div>
+      </div>
+
+      <div class="interview-grid">
+        <div class="avatar-canvas-container">
+          <canvas id="avatar-canvas" width="380" height="360"></canvas>
+          <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.75rem; text-align: center;">
+            <strong>Dr. Sophia Vance</strong> • Chief AI Evaluation Fellow
+          </div>
+        </div>
+
+        <div id="interview-stage-container">
+          <div class="interview-active-card">
+            <div class="interview-header">
+              <div class="role-badge">🎙️ Mock Interview Ready</div>
+              <span class="status-indicator-pill" id="avatar-status-pill">🤖 Avatar Ready</span>
+            </div>
+            <div class="interview-transcript-box" id="interview-transcript-feed">
+              <div class="transcript-msg system">
+                <p>Select an interview track above and click 'Launch Live Voice Interview' to begin a live voice dialogue with the AI Avatar.</p>
+              </div>
+            </div>
+            <div class="candidate-response-dock">
+              <button class="btn btn-primary btn-lg" onclick="AvatarInterviewer.startInterview('ml_engineer')">
+                🚀 Launch Live Voice Interview
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         VIEW 10: Study Groups (8-10 Members Voice Mesh)
+         ========================================================================== -->
+    <section class="view-section" id="view-groups">
+      <div class="sources-hub-header">
+        <div>
+          <h2>👥 Collaborative Study Groups & Voice Mesh</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Join 8-10 peer study rooms with live voice calls, shared notes, and subpart keyframe doubt resolution.</p>
+        </div>
+        <div class="sources-controls">
+          <select class="search-input" id="study-group-select" onchange="StudyGroupEngine.switchGroup(this.value)"></select>
+          <button class="btn btn-primary btn-sm" onclick="StudyGroupEngine.promptNewDoubt()">
+            + Post Peer Doubt
+          </button>
+        </div>
+      </div>
+
+      <div id="active-group-view-container"></div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       MODALS
+       ========================================================================== -->
+
+  <!-- 1. Student Onboarding Focus Survey Modal -->
+  <div class="modal-overlay" id="survey-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>📋 Student Focus & Baseline Capacity Survey</h3>
+        <button class="modal-close" onclick="App.closeModal('survey-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+          To overcome short-form attention drift, FocusFlow AI's Python Stacking Ensemble predicts customized sitting stretch intervals (adding +15 to +30 minutes over your baseline) for every video.
+        </p>
+
+        <form id="focus-survey-form" onsubmit="event.preventDefault(); FocusEngine.submitSurvey({
+          baselineMinutes: document.getElementById('survey-baseline-input').value,
+          primaryDomain: document.getElementById('survey-domain-input').value,
+          dailyGoalMinutes: document.getElementById('survey-daily-goal').value
+        });">
+          <div style="margin-bottom: 1rem;">
+            <label style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">
+              1. What is your typical uninterrupted sitting focus time right now?
+            </label>
+            <select class="search-input" style="width: 100%;" id="survey-baseline-input">
+              <option value="15">🌱 15 minutes (High short-form distraction)</option>
+              <option value="20" selected>⚡ 20 minutes (Standard starting baseline)</option>
+              <option value="30">🔥 30 minutes (Moderate endurance)</option>
+              <option value="45">🚀 45 minutes (Experienced deep worker)</option>
+              <option value="60">👑 60+ minutes (High sitting capacity)</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">
+              2. What topics or domains are you currently preparing for?
+            </label>
+            <select class="search-input" style="width: 100%;" id="survey-domain-input">
+              <option value="Computer Science & AI" selected>Computer Science, AI & Deep Learning</option>
+              <option value="System Design & Backend">Distributed Systems & Cloud Architecture</option>
+              <option value="Quantitative & Mathematics">Quantitative Finance & Mathematics</option>
+              <option value="Medical & Biological">Medical & Life Sciences</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 1.25rem;">
+            <label style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">
+              3. Target Daily Sitting Focus Goal:
+            </label>
+            <input type="number" class="search-input" style="width: 100%;" id="survey-daily-goal" value="90" min="30" max="360" />
+          </div>
+
+          <div style="background: rgba(0, 242, 254, 0.08); padding: 0.85rem; border-radius: var(--radius-md); border: 1px solid rgba(0, 242, 254, 0.2); font-size: 0.82rem; color: var(--cyan); margin-bottom: 1.25rem;">
+            ⚡ <strong>Python Stacking Ensemble:</strong> Calculates your optimal stretch chunk <strong>(+15-30m)</strong> and verifies posture via Computer Vision to award XP!
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            🎯 Save Focus Protocol & Configure Chunks
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Sprint Reward Celebration Modal -->
+  <div class="modal-overlay" id="reward-modal">
+    <div class="modal-card" style="text-align: center; padding: 2rem;">
+      <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">🎉</div>
+      <h2 id="reward-title-text" style="font-family: var(--font-display); margin-bottom: 0.5rem;">Sprint Completed!</h2>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+        You maintained verified sitting focus for the full adaptive stretch duration without standing up!
+      </p>
+
+      <div style="display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div style="background: rgba(0, 242, 254, 0.15); padding: 1rem 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--cyan);">
+          <span style="font-size: 1.6rem; font-weight: 800; color: var(--cyan); display: block;" id="reward-xp-text">+500 XP</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Focus Stamina XP</span>
+        </div>
+        <div style="background: rgba(246, 211, 101, 0.15); padding: 1rem 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--amber);">
+          <span style="font-size: 1.6rem; font-weight: 800; color: var(--amber); display: block;" id="reward-gems-text">+5 Gems</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Focus Currency</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-lg" onclick="App.closeModal('reward-modal')">
+        🚀 Continue to Next Sprint
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. Add Source Modal -->
+  <div class="modal-overlay" id="add-source-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>+ Ingest New Study Resource (RAG Vector Index)</h3>
+        <button class="modal-close" onclick="App.closeModal('add-source-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 1rem;">
+          <label style="display:block; font-size: 0.85rem; font-weight:600; margin-bottom:0.35rem;">YouTube Video URL or Video ID:</label>
+          <input type="text" class="search-input" style="width: 100%;" id="new-yt-url" placeholder="https://www.youtube.com/watch?v=..." />
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display:block; font-size: 0.85rem; font-weight:600; margin-bottom:0.35rem;">Custom Title / Topic:</label>
+          <input type="text" class="search-input" style="width: 100%;" id="new-yt-title" placeholder="e.g. Distributed Consensus & Raft Protocol" />
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display:block; font-size: 0.85rem; font-weight:600; margin-bottom:0.35rem;">Or Paste Text / Document Notes:</label>
+          <textarea class="shared-notes-area" id="new-doc-text" placeholder="Paste research abstract, lecture notes, or markdown content..."></textarea>
+        </div>
+        <button class="btn btn-primary" style="width: 100%;" onclick="
+          const ytUrl = document.getElementById('new-yt-url').value;
+          const title = document.getElementById('new-yt-title').value;
+          const docText = document.getElementById('new-doc-text').value;
+          if (ytUrl) {
+            KnowledgeHub.addYouTubeSource(ytUrl, title);
+          } else if (docText) {
+            KnowledgeHub.addDocumentSource(title || 'Custom Study Notes', docText);
+          }
+          App.closeModal('add-source-modal');
+        ">
+          ✨ Add & Generate RAG Keyframes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Add Flashcard Modal -->
+  <div class="modal-overlay" id="add-card-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>+ Create New Flashcard</h3>
+        <button class="modal-close" onclick="App.closeModal('add-card-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 1rem;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.35rem;">Deck Category:</label>
+          <input type="text" class="search-input" style="width: 100%;" id="new-fc-deck" placeholder="e.g. Deep Learning" />
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.35rem;">Question / Concept:</label>
+          <textarea class="shared-notes-area" style="height: 80px;" id="new-fc-q" placeholder="Enter question for active recall..."></textarea>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.35rem;">Answer & Explanation:</label>
+          <textarea class="shared-notes-area" style="height: 80px;" id="new-fc-a" placeholder="Enter complete answer..."></textarea>
+        </div>
+        <button class="btn btn-primary" style="width: 100%;" onclick="
+          FlashcardEngine.addNewCard(
+            document.getElementById('new-fc-deck').value,
+            document.getElementById('new-fc-q').value,
+            document.getElementById('new-fc-a').value
+          );
+          App.closeModal('add-card-modal');
+        ">
+          Save Flashcard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Source Viewer Modal -->
+  <div class="modal-overlay" id="source-viewer-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="source-viewer-title">Document Inspection</h3>
+        <button class="modal-close" onclick="App.closeModal('source-viewer-modal')">&times;</button>
+      </div>
+      <div class="modal-body" id="source-viewer-body"></div>
+    </div>
+  </div>
+
+  <!-- 6. Settings Modal -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>⚙️ Platform & Python AI Configuration</h3>
+        <button class="modal-close" onclick="App.closeModal('settings-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 1.25rem;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.35rem;">
+            Google Gemini API Key (Optional for live LLM reasoning):
+          </label>
+          <input type="password" class="search-input" style="width: 100%;" id="settings-gemini-key" placeholder="AIzaSy..." />
+          <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.3rem;">
+            *Runs seamless local neural heuristics if omitted.
+          </p>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%;" onclick="
+          const key = document.getElementById('settings-gemini-key').value;
+          if (key) AITutor.saveApiKey(key);
+          App.closeModal('settings-modal');
+        ">
+          Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Student Auth & Login Modal -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🔐 Student Authentication & Account Session</h3>
+        <button class="modal-close" onclick="App.closeModal('auth-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Auth Tabs -->
+        <div class="auth-tabs-row">
+          <button class="auth-tab-btn active" id="auth-tab-btn-login" onclick="AuthManager.switchAuthTab('login')">
+            🔑 Sign In
+          </button>
+          <button class="auth-tab-btn" id="auth-tab-btn-signup" onclick="AuthManager.switchAuthTab('signup')">
+            ✨ Register New
+          </button>
+          <button class="auth-tab-btn" id="auth-tab-btn-demo" onclick="AuthManager.switchAuthTab('demo')">
+            ⚡ 1-Click Demo Profiles
+          </button>
+        </div>
+
+        <!-- 1. Sign In Form -->
+        <form id="auth-form-login" onsubmit="event.preventDefault(); AuthManager.loginWithCredentials(
+          document.getElementById('login-email').value,
+          document.getElementById('login-password').value
+        );">
+          <div style="margin-bottom: 1rem;">
+            <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.35rem;">Student Email:</label>
+            <input type="email" class="search-input" style="width: 100%;" id="login-email" value="alex.rivera@focusflow.ai" required />
+          </div>
+          <div style="margin-bottom: 1.25rem;">
+            <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.35rem;">Password:</label>
+            <input type="password" class="search-input" style="width: 100%;" id="login-password" value="pass123" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-bottom: 0.75rem;">
+            🚀 Sign In to FocusFlow
+          </button>
+          <p style="font-size: 0.78rem; color: var(--text-muted); text-align: center;">
+            Don't have an account? <a href="#" style="color: var(--cyan);" onclick="AuthManager.switchAuthTab('signup')">Create one here</a>
+          </p>
+        </form>
+
+        <!-- 2. Registration Form -->
+        <form id="auth-form-signup" style="display: none;" onsubmit="event.preventDefault(); AuthManager.registerNewUser(
+          document.getElementById('reg-name').value,
+          document.getElementById('reg-email').value,
+          document.getElementById('reg-password').value,
+          document.getElementById('reg-baseline').value,
+          document.getElementById('reg-domain').value
+        );">
+          <div style="margin-bottom: 0.85rem;">
+            <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.35rem;">Full Name:</label>
+            <input type="text" class="search-input" style="width: 100%;" id="reg-name" placeholder="e.g. Jordan Lee" required />
+          </div>
+          <div style="margin-bottom: 0.85rem;">
+            <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.35rem;">Student Email:</label>
+            <input type="email" class="search-input" style="width: 100%;" id="reg-email" placeholder="jordan@university.edu" required />
+          </div>
+          <div style="margin-bottom: 0.85rem;">
+            <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.35rem;">Password:</label>
+            <input type="password" class="search-input" style="width: 100%;" id="reg-password" placeholder="••••••••" required />
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <div>
+              <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:0.35rem;">Baseline Sitting:</label>
+              <select class="search-input" style="width: 100%;" id="reg-baseline">
+                <option value="15">15 mins</option>
+                <option value="20" selected>20 mins</option>
+                <option value="30">30 mins</option>
+                <option value="45">45 mins</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:0.35rem;">Primary Track:</label>
+              <select class="search-input" style="width: 100%;" id="reg-domain">
+                <option value="Computer Science & AI">AI & ML Track</option>
+                <option value="System Architecture">Distributed Systems</option>
+                <option value="Quantitative Finance">Quantitative Math</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            ✨ Register (+50 Focus Gems Welcome Bonus 💎)
+          </button>
+        </form>
+
+        <!-- 3. Demo Profiles Quick Switch -->
+        <div id="auth-panel-demo" style="display: none;">
+          <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
+            Select a pre-configured student profile with custom streaks, gem wallets, and learning history:
+          </p>
+
+          <div class="demo-account-card" onclick="AuthManager.switchDemoUser('user_alex')">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 2rem;">👨‍🎓</span>
+              <div>
+                <strong style="display: block; font-size: 0.95rem;">Alex Rivera</strong>
+                <span style="font-size: 0.75rem; color: var(--cyan);">CS & AI Engineer • Lvl 3</span>
+              </div>
+            </div>
+            <div style="text-align: right; font-size: 0.8rem;">
+              <div style="color: var(--rose); font-weight: 700;">6d Streak 🔥</div>
+              <div style="color: var(--amber); font-weight: 700;">85 Gems 💎</div>
+            </div>
+          </div>
+
+          <div class="demo-account-card" onclick="AuthManager.switchDemoUser('user_maya')">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 2rem;">👩‍💻</span>
+              <div>
+                <strong style="display: block; font-size: 0.95rem;">Maya Patel</strong>
+                <span style="font-size: 0.75rem; color: var(--cyan);">Quant Finance & Deep Learning • Lvl 5</span>
+              </div>
+            </div>
+            <div style="text-align: right; font-size: 0.8rem;">
+              <div style="color: var(--rose); font-weight: 700;">14d Streak 🔥</div>
+              <div style="color: var(--amber); font-weight: 700;">160 Gems 💎</div>
+            </div>
+          </div>
+
+          <div class="demo-account-card" onclick="AuthManager.switchDemoUser('user_liam')">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 2rem;">👨‍🔬</span>
+              <div>
+                <strong style="display: block; font-size: 0.95rem;">Liam Vance</strong>
+                <span style="font-size: 0.75rem; color: var(--cyan);">Distributed Cloud Architect • Lvl 2</span>
+              </div>
+            </div>
+            <div style="text-align: right; font-size: 0.8rem;">
+              <div style="color: var(--rose); font-weight: 700;">4d Streak 🔥</div>
+              <div style="color: var(--amber); font-weight: 700;">45 Gems 💎</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Voucher Claimed Celebration Modal -->
+  <div class="modal-overlay" id="voucher-claimed-modal">
+    <div class="modal-card" style="text-align: center; padding: 2rem;">
+      <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">🎉</div>
+      <h2 style="font-family: var(--font-display); margin-bottom: 0.35rem;">Reward Perk Claimed!</h2>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.25rem;">
+        Your verified focus stamina has unlocked an official student discount!
+      </p>
+
+      <div style="background: rgba(0, 0, 0, 0.4); border: 1px dashed var(--cyan); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.5rem;">
+        <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;" id="modal-v-brand">Brand Name</span>
+        <h3 style="font-size: 1.15rem; color: var(--cyan); margin: 0.25rem 0;" id="modal-v-title">Perk Title</h3>
+        <span class="discount-badge" style="font-size: 1rem; display: inline-block; margin-bottom: 1rem;" id="modal-v-discount">Discount</span>
+
+        <div class="voucher-code-strip" style="margin-bottom: 0;">
+          <span class="v-code-text" id="modal-v-code">FOCUS-CODE-123456</span>
+          <button class="btn-copy-code" onclick="RewardsStore.copyPromoCode(document.getElementById('modal-v-code').textContent, this)">
+            📋 Copy Code
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn btn-secondary btn-lg" style="flex:1;" onclick="App.closeModal('voucher-claimed-modal'); App.switchView('rewards');">
+          🎟️ View in Wallet
+        </button>
+        <button class="btn btn-primary btn-lg" style="flex:1;" onclick="App.closeModal('voucher-claimed-modal')">
+          🚀 Keep Focusing
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/focusEngine.js"></script>
+  <script src="js/webcamProctor.js"></script>
+  <script src="js/youtubePlayer.js"></script>
+  <script src="js/knowledgeHub.js"></script>
+  <script src="js/aiTutor.js"></script>
+  <script src="js/flashcards.js"></script>
+  <script src="js/mindmap.js"></script>
+  <script src="js/practiceHub.js"></script>
+  <script src="js/examProctor.js"></script>
+  <script src="js/avatarInterviewer.js"></script>
+  <script src="js/studyGroups.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/rewardsStore.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
