@@ -29,8 +29,8 @@ if __name__ == "__main__":
     host = os.environ.get("HOST", "0.0.0.0")
 
     print("=" * 65)
-    print("⚡ FocusFlow AI — Cloud & Local Web Application Server")
-    print(f"🚀 Running on http://{host}:{port}")
+    print("[FocusFlow AI] Cloud & Local Web Application Server")
+    print(f"[FocusFlow AI] Running on http://{host}:{port}")
     print("=" * 65)
 
     uvicorn.run(
