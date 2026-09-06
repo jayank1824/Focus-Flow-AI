@@ -75,6 +75,9 @@
           <button class="profile-menu-item" onclick="App.switchView('stats'); document.getElementById('profile-dropdown-menu').classList.remove('active');">
             📊 Stats & Accuracy Breakdown
           </button>
+          <button class="profile-menu-item" style="color: var(--cyan); font-weight: 600;" onclick="App.switchView('admin'); document.getElementById('profile-dropdown-menu').classList.remove('active');">
+            🛡️ Admin Monitoring & Telemetry
+          </button>
           <button class="profile-menu-item" onclick="App.openModal('survey-modal'); document.getElementById('profile-dropdown-menu').classList.remove('active');">
             📋 Adjust Focus Stretch Survey
           </button>
@@ -106,6 +109,9 @@
       </button>
       <button class="nav-tab-btn" data-view="stats">
         📊 Stats & Growth Hub
+      </button>
+      <button class="nav-tab-btn" data-view="admin">
+        🛡️ Admin & Analytics
       </button>
       <button class="nav-tab-btn" data-view="sources">
         📚 Knowledge Hub
@@ -741,6 +747,110 @@
       <div id="active-group-view-container"></div>
     </section>
 
+    <!-- ==========================================================================
+         VIEW 11: Admin Monitoring & Data Analytics Console
+         ========================================================================== -->
+    <section class="view-section" id="view-admin">
+      <div class="sources-hub-header">
+        <div>
+          <h2>🛡️ Admin Monitoring & Data Analytics Command Center</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Real-time student sitting capacity telemetry, OpenCV proctoring audit logs, Stacking Ensemble fatigue distributions, and BKT mastery analytics.
+          </p>
+        </div>
+        <div class="sources-controls">
+          <button class="btn btn-secondary btn-sm" onclick="AdminHub.init()">
+            🔄 Refresh Telemetry
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="AdminHub.exportAnalytics()">
+            📥 Export Analytics (JSON)
+          </button>
+        </div>
+      </div>
+
+      <!-- Top KPI Stat Cards -->
+      <div class="stats-overview-grid" id="admin-kpi-grid" style="margin-bottom: 1.5rem;"></div>
+
+      <!-- Admin Announcement Broadcaster Dock -->
+      <div class="analytics-card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, rgba(0, 242, 254, 0.04), rgba(79, 172, 254, 0.04)); border: 1px solid rgba(0, 242, 254, 0.2);">
+        <div class="analytics-card-header">
+          <div>
+            <h3>📢 Broadcast Real-Time Platform Announcement</h3>
+            <p style="color: var(--text-muted); font-size: 0.82rem;">Dispatch high-priority focus sprint notices or motivation alerts to all active connected scholars</p>
+          </div>
+          <span class="badge-pill info">Instant Push Active</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 0.75rem; margin-top: 1rem; align-items: center;">
+          <input type="text" class="search-input" id="admin-broadcast-msg" placeholder="e.g. 🚀 45-min Deep Work Sprint starts in 2 minutes across all CS224N study pods!" />
+          <select class="search-input" id="admin-broadcast-type">
+            <option value="info">ℹ️ General Info / Sprint</option>
+            <option value="warning">⚠️ Proctor Strictness Warning</option>
+            <option value="celebration">🎉 Platform Milestone / Double Gems</option>
+          </select>
+          <button class="btn btn-primary" onclick="AdminHub.sendBroadcast()">
+            📢 Dispatch Broadcast
+          </button>
+        </div>
+      </div>
+
+      <!-- Real-time Student Activity Table -->
+      <div class="analytics-card" style="margin-bottom: 1.5rem;">
+        <div class="analytics-card-header" style="flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3>👥 Live Scholar Activity & Proctoring Monitor</h3>
+            <p style="color: var(--text-muted); font-size: 0.82rem;">Active video sprints, sitting endurance targets, webcam eye tracking, and ML fatigue indices</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            <div class="admin-filter-bar">
+              <button class="admin-filter-pill active" data-filter="all" onclick="AdminHub.setFilter('all')">🌐 All (6)</button>
+              <button class="admin-filter-pill" data-filter="active_sprints" onclick="AdminHub.setFilter('active_sprints')">⚡ Active Sprints (2)</button>
+              <button class="admin-filter-pill" data-filter="flagged" onclick="AdminHub.setFilter('flagged')">⚠️ Flags / Warnings (2)</button>
+              <button class="admin-filter-pill" data-filter="high_fatigue" onclick="AdminHub.setFilter('high_fatigue')">🔥 High Fatigue (1)</button>
+            </div>
+            <input type="text" class="search-input" id="admin-student-search" placeholder="🔍 Search scholar, email, track..." style="width: 200px;" />
+          </div>
+        </div>
+
+        <div class="table-responsive" style="overflow-x: auto; margin-top: 1rem;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Scholar Profile</th>
+                <th>Current Learning Activity</th>
+                <th>Sitting Progress (+15-30m Stretch)</th>
+                <th>OpenCV Proctor State</th>
+                <th>ML Fatigue & BKT</th>
+                <th>Admin Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-students-table-body">
+              <!-- Rendered dynamically by AdminHub.renderStudentTable() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Two-Column Analytics Grid: Fatigue & BKT Mastery -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div id="admin-fatigue-chart-container"></div>
+        <div id="admin-bkt-chart-container"></div>
+      </div>
+
+      <!-- Proctoring & Anti-Cheat Audit Log -->
+      <div class="analytics-card">
+        <div class="analytics-card-header">
+          <div>
+            <h3>👁️ OpenCV Proctoring & Anti-Cheat Real-Time Audit Stream</h3>
+            <p style="color: var(--text-muted); font-size: 0.82rem;">Live sensor stream: Gaze deviation, Eye Aspect Ratio (EAR), face presence, and tab switches</p>
+          </div>
+          <span class="badge-pill warning">Live Sensor Feed</span>
+        </div>
+        <div class="admin-audit-feed" id="admin-audit-log-feed" style="margin-top: 1rem;">
+          <!-- Injected dynamically by AdminHub.renderAuditLog() -->
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ==========================================================================
@@ -1079,6 +1189,20 @@
               <div style="color: var(--amber); font-weight: 700;">45 Gems 💎</div>
             </div>
           </div>
+
+          <div class="demo-account-card" onclick="AuthManager.switchDemoUser('user_admin')" style="border-color: rgba(0, 242, 254, 0.4); background: rgba(0, 242, 254, 0.05);">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 2rem;">👩‍🏫</span>
+              <div>
+                <strong style="display: block; font-size: 0.95rem;">Dr. Sophia Vance (Admin)</strong>
+                <span style="font-size: 0.75rem; color: var(--cyan);">Dean of AI Studies & Platform Admin</span>
+              </div>
+            </div>
+            <div style="text-align: right; font-size: 0.8rem;">
+              <div style="color: var(--rose); font-weight: 700;">30d Streak 🔥</div>
+              <div style="color: var(--amber); font-weight: 700;">450 Gems 💎</div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -1118,6 +1242,19 @@
     </div>
   </div>
 
+  <!-- 9. Admin Student Telemetry Inspection Modal -->
+  <div class="modal-overlay" id="admin-inspect-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🔍 Scholar Telemetry & Proctoring Inspector</h3>
+        <button class="modal-close" onclick="App.closeModal('admin-inspect-modal')">&times;</button>
+      </div>
+      <div class="modal-body" id="admin-inspect-modal-body">
+        <!-- Rendered dynamically by AdminHub.inspectStudent() -->
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toast-container"></div>
 
@@ -1137,6 +1274,7 @@
   <script src="js/studyGroups.js"></script>
   <script src="js/analytics.js"></script>
   <script src="js/rewardsStore.js"></script>
+  <script src="js/adminHub.js"></script>
   <script src="js/app.js"></script>
 
 </body>

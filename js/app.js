@@ -25,6 +25,7 @@ const App = {
     if (window.StudyGroupEngine) window.StudyGroupEngine.init();
     if (window.AnalyticsEngine) window.AnalyticsEngine.init();
     if (window.RewardsStore) window.RewardsStore.init();
+    if (window.AdminHub) window.AdminHub.init();
 
     this.bindNavigation();
     this.bindKeyboardShortcuts();
@@ -64,6 +65,8 @@ const App = {
       setTimeout(() => window.AnalyticsEngine.renderStatsView(), 50);
     } else if (viewName === 'rewards' && window.RewardsStore) {
       setTimeout(() => window.RewardsStore.renderStore(), 50);
+    } else if (viewName === 'admin' && window.AdminHub) {
+      setTimeout(() => window.AdminHub.init(), 50);
     } else if (viewName === 'avatar' && window.AvatarInterviewer) {
       // Avatar loop is already running
     } else if (viewName === 'flashcards' && window.FlashcardEngine) {

@@ -3,8 +3,9 @@
  * 
  * Features:
  * - Student Login & Registration
- * - 1-Click Pre-configured Demo Accounts (Alex, Maya, Liam)
+ * - 1-Click Pre-configured Demo Accounts (Alex, Maya, Liam, Dr. Vance Admin)
  * - Header Profile Dropdown with real-time level, streak, and gems status
+ * - Automatic Survey Pop-up right after login/registration before work starts
  * - Seamless synchronization across all learning modules and reward wallets
  */
 
@@ -54,6 +55,22 @@ const AuthManager = {
       currentStretchFocusMinutes: 30,
       targetDailyFocusMinutes: 60,
       preferredDomains: ['Distributed Systems', 'Web Security', 'Algorithms']
+    },
+    {
+      id: 'user_admin',
+      name: 'Dr. Sophia Vance',
+      email: 'admin@focusflow.ai',
+      avatar: '👩‍🏫',
+      role: 'Dean of AI Studies & Platform Admin',
+      level: 10,
+      xp: 15400,
+      gems: 450,
+      streakDays: 30,
+      baselineFocusMinutes: 45,
+      currentStretchFocusMinutes: 75,
+      targetDailyFocusMinutes: 180,
+      preferredDomains: ['Computer Science', 'Machine Learning & AI', 'System Design', 'Quantitative & Mathematics'],
+      isAdmin: true
     }
   ],
 
@@ -130,6 +147,14 @@ const AuthManager = {
     if (dropdown) dropdown.classList.remove('active');
 
     App.closeModal('auth-modal');
+
+    // Trigger survey pop-up immediately after switching profile
+    setTimeout(() => {
+      App.openModal('survey-modal');
+      if (window.FocusEngine) {
+        window.FocusEngine.showToast('📋 Focus Protocol Survey: Calibrate your baseline sitting capacity (+15-30m)!', 'info');
+      }
+    }, 300);
   },
 
   loginWithCredentials(email, password) {
@@ -171,6 +196,14 @@ const AuthManager = {
     }
 
     App.closeModal('auth-modal');
+
+    // Requirement: Survey should pop-up first just after login or signin then work starts
+    setTimeout(() => {
+      App.openModal('survey-modal');
+      if (window.FocusEngine) {
+        window.FocusEngine.showToast('📋 Focus Protocol Survey: Please calibrate your sitting focus target before starting work!', 'info');
+      }
+    }, 300);
   },
 
   registerNewUser(name, email, password, baselineMins, domain) {
@@ -178,6 +211,9 @@ const AuthManager = {
       if (window.FocusEngine) window.FocusEngine.showToast('Please complete all registration fields', 'warning');
       return;
     }
+
+    const baseline = parseInt(baselineMins) || 20;
+    const stretchTarget = baseline + Math.min(30, Math.max(15, Math.round(baseline * 0.75)));
 
     const newUser = {
       id: 'user_' + Math.random().toString(36).substr(2, 9),
@@ -189,8 +225,8 @@ const AuthManager = {
       xp: 200,
       gems: 50, // Starter registration bonus
       streakDays: 1,
-      baselineFocusMinutes: parseInt(baselineMins) || 20,
-      currentStretchFocusMinutes: (parseInt(baselineMins) || 20) + 15,
+      baselineFocusMinutes: baseline,
+      currentStretchFocusMinutes: stretchTarget,
       targetDailyFocusMinutes: 90,
       preferredDomains: [domain]
     };
@@ -208,6 +244,14 @@ const AuthManager = {
     }
 
     App.closeModal('auth-modal');
+
+    // Requirement: Survey should pop-up first just after login or signin then work starts
+    setTimeout(() => {
+      App.openModal('survey-modal');
+      if (window.FocusEngine) {
+        window.FocusEngine.showToast('📋 Welcome! Please confirm your baseline focus survey to activate adaptive chunking (+15-30m).', 'info');
+      }
+    }, 300);
   },
 
   openLoginModal(defaultTab = 'login') {

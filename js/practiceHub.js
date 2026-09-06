@@ -4,7 +4,8 @@
  * Features:
  * - Domain & Topic categorized question banks
  * - Unsolved & Missed Question revision tracking
- * - Step-by-step hint reveals & deep AI solution breakdowns
+ * - Inline AI Tutor Explanations & Step-by-Step Hint Breakdowns rendered DIRECTLY BELOW the question
+ * - Deep concept intuition grounded with Feynman, Socratic, and Expert personas
  * - Real-time sync with Python Bayesian Knowledge Tracing (BKT) endpoint
  */
 
@@ -16,7 +17,7 @@ const PracticeHub = {
     selectedOption: null,
     isSubmitted: false,
     currentQuestionId: null,
-    hintsRevealed: 0
+    hintsRevealed: {}
   },
 
   init() {
@@ -99,6 +100,9 @@ const PracticeHub = {
 
     container.innerHTML = questions.map((q, idx) => {
       const isUnsolved = unsolvedList.includes(q.id) || !q.solved;
+      const hintCount = this.state.hintsRevealed[q.id] || 0;
+      const totalHints = (q.hints || []).length || 2;
+
       return `
         <div class="practice-card ${isUnsolved ? 'unsolved-marked' : 'solved-mastered'}" id="pcard_${q.id}">
           <div class="practice-card-header">
@@ -112,10 +116,31 @@ const PracticeHub = {
             </div>
           </div>
 
+          <!-- Question Header & Text -->
           <div class="practice-question-text">
             <h4>${idx + 1}. ${q.question}</h4>
           </div>
 
+          <!-- ================================================================
+               INLINE AI TUTOR HINT & EXPLANATION (JUST BELOW THE QUESTION)
+               ================================================================ -->
+          <div class="inline-ai-tutor-container" id="inline_tutor_${q.id}">
+            <div class="inline-tutor-toolbar">
+              <button class="btn-inline-hint" id="btn_hint_toggle_${q.id}" onclick="PracticeHub.revealInlineAIHint('${q.id}')">
+                💡 Reveal AI Tutor Hint (<span id="hint_count_${q.id}">${hintCount}</span>/${totalHints})
+              </button>
+              <button class="btn-inline-explain" onclick="PracticeHub.askAITutorExplanation('${q.id}')">
+                🤖 AI Tutor Concept Breakdown
+              </button>
+            </div>
+
+            <!-- Inline Explanatory Container -->
+            <div class="inline-ai-hint-box" id="inline_hint_box_${q.id}" style="${hintCount > 0 ? 'display: block;' : 'display: none;'}">
+              <!-- Injected dynamically by revealInlineAIHint or askAITutorExplanation -->
+            </div>
+          </div>
+
+          <!-- Options Grid -->
           <div class="practice-options-grid" id="options_${q.id}">
             ${q.options.map((opt, optIdx) => `
               <div class="practice-option-item" onclick="PracticeHub.selectOption('${q.id}', ${optIdx})">
@@ -125,17 +150,17 @@ const PracticeHub = {
             `).join('')}
           </div>
 
+          <!-- Card Footer -->
           <div class="practice-card-footer">
             <div class="footer-left">
-              <button class="btn-text-hint" onclick="PracticeHub.revealHint('${q.id}')">
-                💡 Reveal Hint (<span id="hint_count_${q.id}">0</span>/${(q.hints || []).length})
-              </button>
-              <div class="hint-display-box" id="hint_box_${q.id}"></div>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">
+                ⚡ BKT Tracked • +50 Focus XP
+              </span>
             </div>
 
             <div class="footer-right">
-              <button class="btn btn-secondary btn-sm" onclick="AITutor.openTutorModalWithPrompt('Help me solve this practice question: ${q.question.replace(/'/g, '')}')">
-                🤖 Ask AI Tutor
+              <button class="btn btn-secondary btn-sm" onclick="AITutor.openTutorModalWithPrompt('Help me understand the core principle behind this question: ${q.question.replace(/'/g, '')}')">
+                🎙️ Ask AI Voice Tutor
               </button>
               <button class="btn btn-primary btn-sm" id="btn_submit_${q.id}" onclick="PracticeHub.submitAnswer('${q.id}')">
                 Submit Answer ➔
@@ -161,22 +186,142 @@ const PracticeHub = {
     card.dataset.selectedOpt = optionIndex;
   },
 
-  revealHint(questionId) {
+  /**
+   * Explains and renders the hint directly BELOW the question in an inline container
+   */
+  revealInlineAIHint(questionId) {
     const questions = FocusStorage.get(FocusStorage.KEYS.PRACTICE_QUESTIONS) || [];
     const q = questions.find(item => item.id === questionId);
-    if (!q || !q.hints || q.hints.length === 0) return;
+    if (!q) return;
 
-    const hintBox = document.getElementById(`hint_box_${questionId}`);
+    const hintBox = document.getElementById(`inline_hint_box_${questionId}`);
     const countSpan = document.getElementById(`hint_count_${questionId}`);
-    const currentCount = parseInt(countSpan.textContent) || 0;
+    if (!hintBox || !countSpan) return;
 
-    if (currentCount < q.hints.length) {
-      const nextHint = q.hints[currentCount];
-      hintBox.innerHTML += `<div class="hint-bubble">💡 <strong>Hint ${currentCount + 1}:</strong> ${nextHint}</div>`;
-      countSpan.textContent = currentCount + 1;
-    } else {
-      if (window.FocusEngine) window.FocusEngine.showToast('All hints already revealed!', 'info');
+    let currentCount = this.state.hintsRevealed[questionId] || 0;
+    const defaultHints = q.hints && q.hints.length > 0 ? q.hints : [
+      `Analyze the fundamental invariants of ${q.topic || 'the topic'}. Look closely at how state transitions occur.`,
+      `Eliminate options that violate time complexity or memory bounds.`
+    ];
+
+    if (currentCount >= defaultHints.length) {
+      if (window.FocusEngine) window.FocusEngine.showToast('All hints already revealed for this question! Check the AI Concept Breakdown for more details.', 'info');
+      return;
     }
+
+    currentCount++;
+    this.state.hintsRevealed[questionId] = currentCount;
+    countSpan.textContent = currentCount;
+
+    hintBox.style.display = 'block';
+
+    const hintText = defaultHints[currentCount - 1];
+
+    // Pedagogical pedagogical hint format: Intuition, Clue, and Socratic Trigger
+    const hintCardHTML = `
+      <div class="inline-hint-entry animate-fade-in">
+        <div class="inline-hint-header">
+          <div class="hint-badge-pill">💡 AI Tutor Hint #${currentCount}</div>
+          <span class="hint-tag-topic">Topic: ${q.topic || q.domain}</span>
+        </div>
+        <div class="inline-hint-content">
+          <p class="hint-main-text"><strong>AI Teacher Insight:</strong> ${hintText}</p>
+          <div class="hint-socratic-trigger">
+            🎯 <strong>Socratic Guiding Prompt:</strong> How does this property narrow down the multiple choices provided above?
+          </div>
+        </div>
+      </div>
+    `;
+
+    hintBox.innerHTML += hintCardHTML;
+
+    if (window.FocusEngine) {
+      window.FocusEngine.showToast(`💡 AI Tutor Hint #${currentCount} explained just below question!`, 'info');
+    }
+  },
+
+  /**
+   * Generates or reveals deep pedagogical concept breakdown directly below question
+   */
+  async askAITutorExplanation(questionId) {
+    const questions = FocusStorage.get(FocusStorage.KEYS.PRACTICE_QUESTIONS) || [];
+    const q = questions.find(item => item.id === questionId);
+    if (!q) return;
+
+    const hintBox = document.getElementById(`inline_hint_box_${questionId}`);
+    if (!hintBox) return;
+
+    hintBox.style.display = 'block';
+
+    // Show loading state
+    hintBox.innerHTML = `
+      <div class="inline-hint-entry loading animate-fade-in">
+        <div class="inline-hint-header">
+          <div class="hint-badge-pill">🤖 Generating AI Tutor Pedagogical Breakdown...</div>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--cyan); margin: 0.5rem 0;">
+          <span class="pulse-dot cyan"></span> Synthesizing concept intuition via Feynman mental model & RAG knowledge base...
+        </p>
+      </div>
+    `;
+
+    try {
+      const promptQuery = `Explain the theoretical concept and intuition behind this question: "${q.question}" in topic "${q.topic}". Give a high-level conceptual analogy and formula/property clue without directly giving away the final letter choice.`;
+      
+      const res = await fetch('/api/llm/tutor-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: promptQuery, persona: 'feynman' })
+      });
+
+      let explanationText = "";
+      if (res.ok) {
+        const data = await res.json();
+        explanationText = data.response || data.text || "";
+      }
+
+      if (!explanationText) {
+        explanationText = `Here is the core intuition: In **${q.topic}**, the key challenge is balancing computational efficiency with structural fidelity. Think of it like a highway bypass—instead of computing every intermediate state sequentially, certain architectures allow information to flow across direct shortcut pathways!`;
+      }
+
+      hintBox.innerHTML = `
+        <div class="inline-hint-entry tutor-deep-dive animate-fade-in">
+          <div class="inline-hint-header">
+            <div class="hint-badge-pill" style="background: rgba(0, 242, 254, 0.15); border-color: var(--cyan); color: var(--cyan);">
+              🤖 AI Tutor (Feynman Persona) - Concept Breakdown
+            </div>
+            <button class="btn-close-hint" onclick="document.getElementById('inline_hint_box_${q.id}').style.display = 'none';">✕ Hide</button>
+          </div>
+          <div class="inline-hint-content">
+            <p class="hint-main-text">${explanationText}</p>
+            <div class="hint-key-takeaways">
+              🧠 <strong>Key Intuition:</strong> Focus on the fundamental definitions of <em>${q.topic}</em> and inspect how each option impacts gradient flow or algorithmic consistency.
+            </div>
+          </div>
+        </div>
+      `;
+
+    } catch (e) {
+      console.warn('AI Tutor inline explanation fallback:', e);
+      hintBox.innerHTML = `
+        <div class="inline-hint-entry tutor-deep-dive animate-fade-in">
+          <div class="inline-hint-header">
+            <div class="hint-badge-pill">🤖 AI Tutor Concept Intuition</div>
+            <button class="btn-close-hint" onclick="document.getElementById('inline_hint_box_${q.id}').style.display = 'none';">✕ Hide</button>
+          </div>
+          <div class="inline-hint-content">
+            <p class="hint-main-text">
+              <strong>Conceptual Analogy:</strong> In <strong>${q.topic}</strong>, consider the core mathematical relationship. Notice how the forward calculation transforms inputs and preserves information flow.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+  },
+
+  // Legacy wrapper for backwards compatibility
+  revealHint(questionId) {
+    this.revealInlineAIHint(questionId);
   },
 
   async submitAnswer(questionId) {

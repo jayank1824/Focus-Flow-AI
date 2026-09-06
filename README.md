@@ -24,12 +24,24 @@
 - **Computer Vision Anti-Slacking Guardian** (`backend/cv_proctor.py`): OpenCV-based face presence, head pose/gaze orientation (detecting looking away), and empty desk detection to pause focus rewards if the student stands up.
 - **LLM Multi-Persona Tutoring** (`backend/llm_service.py`): Socratic, Feynman (ELI5), Strict Grader, and Focus Coach dialogue modes with speech-to-text and voice synthesis.
 
-### 3. 📊 Dedicated Student Stats & Growth Analytics Hub
+### 3. 🛡️ Dedicated Admin Monitoring & Data Analytics Command Center
+- **Live Scholar Activity & Sitting Telemetry**: Real-time tracking of active video sprints, sitting capacity progress (+15m to +30m stretch), streak continuity, and gem wallets.
+- **OpenCV Proctoring & Anti-Cheat Audit Stream**: Live sensor log tracking gaze deviation, Eye Aspect Ratio (EAR), empty desk alerts, and exam tab switching.
+- **Stacking Ensemble ML Fatigue Distribution**: Visual clustering of cohort cognitive fatigue into Optimal, Moderate, and High-Risk categories.
+- **Bayesian Knowledge Tracing (BKT) Platform Mastery**: Topic mastery percentages across Deep Learning, Distributed Systems, ML, and Quantitative Mathematics.
+- **Admin Control Actions**: Broadcast system announcements to all active student screens, inspect individual student telemetry, issue slacking warnings, clear flags, and export cohort JSON datasets.
+
+### 4. 🎯 Practice Arena & Inline AI Tutor Explanations
+- **Inline AI Tutor Hints Directly Below Questions**: Reveals structured pedagogical clues, formula breakdowns, and Socratic guiding prompts situated directly underneath the question without obscuring options.
+- **Deep Concept Intuition**: One-click Feynman concept explanations powered by the backend LLM service.
+- **BKT Synchronization**: Instant Bayesian skill updates on every answer attempt.
+
+### 5. 📊 Dedicated Student Stats & Growth Analytics Hub
 - **Correct vs. Incorrect Questions Breakdown**: Interactive Canvas Donut Chart, topic accuracy progress bars, and a question revision ledger with direct re-attempts.
 - **14-Day Watching & Sitting Growth Chart**: Multi-bar/line trajectory tracking watched hours vs. verified sitting stamina expansion.
 - **Live Ensemble ML Predictor Card**: Real-time display of sitting stretch recommendations and fatigue indicators.
 
-### 4. 🎁 Real-World Student Rewards Marketplace
+### 6. 🎁 Real-World Student Rewards Marketplace
 Turn earned **Focus Gems 💎** and **Streaks 🔥** into tangible rewards:
 - ✈️ **Travel & Commute**: 25% Off Flight & Rail Passes (*MakeMyTrip / StudentUniverse*), $15 Uber Student Ride Credit.
 - 🎬 **Cinema & Entertainment**: Free Weekend IMAX 3D Movie Ticket (*AMC / PVR INOX*), 1-Month Spotify & Netflix Pass.
@@ -38,13 +50,15 @@ Turn earned **Focus Gems 💎** and **Streaks 🔥** into tangible rewards:
 - 🚀 **AI & Academic Grants**: 1-Month Gemini Advanced & Cloud GPU Compute Credits.
 - **Claimed Vouchers Wallet**: Generates unique promo codes with 1-click clipboard copy.
 
-### 5. 🔐 Student Authentication & 1-Click Demo Profiles
-- Sign in, register with custom baseline sitting times, or switch seamlessly between pre-configured student accounts:
+### 7. 🔐 Student Authentication, Admin Profiles & Mandatory Focus Survey
+- Sign in, register, or switch seamlessly between pre-configured profiles:
   - **Alex Rivera** (CS & AI Track • Lvl 3, 6d Streak, 85 Gems)
   - **Maya Patel** (Quant Finance & Deep Learning • Lvl 5, 14d Streak, 160 Gems)
   - **Liam Vance** (Distributed Cloud Architect • Lvl 2, 4d Streak, 45 Gems)
+  - **Dr. Sophia Vance (Admin)** (Dean of AI Studies & Platform Admin • Lvl 10, 30d Streak, 450 Gems)
+- **Automatic Survey Pop-up**: Automatically presents the Focus Protocol Survey upon login/registration to calibrate baseline sitting and compute optimal +15m to +30m stretch targets before work begins.
 
-### 6. 🛡️ Additional Advanced Learning Modules
+### 8. 🧠 Additional Advanced Learning Modules
 - **Interactive 3D Flashcards**: Leitner spaced repetition system.
 - **Concept Mind Map**: Interactive zoomable concept graph.
 - **Proctored Exams**: Anti-cheat snapshot monitoring and integrity grading.

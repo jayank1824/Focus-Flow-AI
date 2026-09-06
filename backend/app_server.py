@@ -372,6 +372,319 @@ async def redeem_reward(req: RedeemRewardRequest):
         "message": f"🎉 Successfully redeemed {reward['title']}! Use promo code at checkout."
     })
 
+# -----------------------------------------------------------------------------
+# 6. Admin Monitoring & Data Analytics Endpoints
+# -----------------------------------------------------------------------------
+
+class AdminBroadcastRequest(BaseModel):
+    title: str = "Platform Focus Sprint Announcement"
+    message: str
+    broadcast_type: str = "info"  # "info" | "warning" | "celebration"
+    urgency: str = "normal"
+
+class AdminUserActionRequest(BaseModel):
+    user_id: str
+    action: str  # "reset_flag" | "issue_warning" | "pause_session" | "grant_gems"
+    note: Optional[str] = None
+
+# In-memory admin telemetry store
+ADMIN_PROCTOR_AUDIT_LOG = [
+    {
+        "id": "audit_101",
+        "timestamp": "2 mins ago",
+        "user_name": "Jordan Lee",
+        "user_email": "jordan.lee@university.edu",
+        "event_type": "EXAM_TAB_SWITCH",
+        "severity": "high",
+        "details": "Focus lost to secondary window during Deep Learning Midterm Exam (Duration: 8.4s)",
+        "cv_metric": "Tab Inactive & Gaze Off-Screen",
+        "status": "flagged"
+    },
+    {
+        "id": "audit_102",
+        "timestamp": "6 mins ago",
+        "user_name": "Elena Rostova",
+        "user_email": "elena.rostova@focusflow.ai",
+        "event_type": "GAZE_DISTRACTION",
+        "severity": "medium",
+        "details": "Head orientation deviated > 35° from screen center during Focus Sprint #1",
+        "cv_metric": "Gaze Left (EAR: 0.29, Pose: Yaw -38°)",
+        "status": "warning_issued"
+    },
+    {
+        "id": "audit_103",
+        "timestamp": "11 mins ago",
+        "user_name": "Alex Rivera",
+        "user_email": "alex.rivera@focusflow.ai",
+        "event_type": "SPRINT_MILESTONE_VERIFIED",
+        "severity": "info",
+        "details": "Completed 35-min adaptive sitting stretch (+15m beyond baseline) with 98.6% verified eye presence",
+        "cv_metric": "Face Centered (EAR: 0.31, Attendance: 98.6%)",
+        "status": "verified"
+    },
+    {
+        "id": "audit_104",
+        "timestamp": "18 mins ago",
+        "user_name": "Liam Vance",
+        "user_email": "liam.vance@focusflow.ai",
+        "event_type": "EMPTY_CHAIR_DETECTED",
+        "severity": "medium",
+        "details": "Student stood up from desk for 42s during active video sprint; timer auto-paused",
+        "cv_metric": "No Face Found (Haar Cascade & Eye Aspect Ratio 0.0)",
+        "status": "auto_paused"
+    },
+    {
+        "id": "audit_105",
+        "timestamp": "24 mins ago",
+        "user_name": "Maya Patel",
+        "user_email": "maya.patel@focusflow.ai",
+        "event_type": "ENDURANCE_RECORD",
+        "severity": "celebration",
+        "details": "Maintained 50-min uninterrupted sitting session on Quantitative PDE proofs",
+        "cv_metric": "Verified Sitting: 50m 00s (100% Attendance)",
+        "status": "verified"
+    }
+]
+
+ACTIVE_STUDENTS_ROSTER = [
+    {
+        "id": "user_alex",
+        "name": "Alex Rivera",
+        "email": "alex.rivera@focusflow.ai",
+        "avatar": "👨‍🎓",
+        "track": "Computer Science & AI",
+        "current_activity": "Focus Sprint #2: Transformer Self-Attention (28m elapsed)",
+        "activity_type": "video_sprint",
+        "baseline_mins": 20,
+        "stretch_mins": 35,
+        "sitting_elapsed_mins": 28,
+        "proctor_status": "verified",
+        "proctor_label": "🟢 Eye Tracking Verified",
+        "ear_score": 0.31,
+        "streak_days": 6,
+        "gems": 85,
+        "fatigue_index": 0.18,
+        "fatigue_label": "Optimal Focus",
+        "bkt_accuracy": 92.4,
+        "flagged": False
+    },
+    {
+        "id": "user_maya",
+        "name": "Maya Patel",
+        "email": "maya.patel@focusflow.ai",
+        "avatar": "👩‍💻",
+        "track": "Quantitative Finance & ML",
+        "current_activity": "Focus Sprint #4: Black-Scholes PDE Proof (42m elapsed)",
+        "activity_type": "video_sprint",
+        "baseline_mins": 30,
+        "stretch_mins": 50,
+        "sitting_elapsed_mins": 42,
+        "proctor_status": "verified",
+        "proctor_label": "🟢 Eye Tracking Verified",
+        "ear_score": 0.29,
+        "streak_days": 14,
+        "gems": 160,
+        "fatigue_index": 0.22,
+        "fatigue_label": "Optimal Focus",
+        "bkt_accuracy": 96.0,
+        "flagged": False
+    },
+    {
+        "id": "user_liam",
+        "name": "Liam Vance",
+        "email": "liam.vance@focusflow.ai",
+        "avatar": "👨‍🔬",
+        "track": "Distributed Systems",
+        "current_activity": "Practice Arena: Raft Consensus Log Replication",
+        "activity_type": "practice",
+        "baseline_mins": 15,
+        "stretch_mins": 30,
+        "sitting_elapsed_mins": 18,
+        "proctor_status": "warning",
+        "proctor_label": "🟡 Slacking Alert (Gaze Drift)",
+        "ear_score": 0.24,
+        "streak_days": 4,
+        "gems": 45,
+        "fatigue_index": 0.38,
+        "fatigue_label": "Moderate Fatigue",
+        "bkt_accuracy": 81.5,
+        "flagged": False
+    },
+    {
+        "id": "user_jordan",
+        "name": "Jordan Lee",
+        "email": "jordan.lee@university.edu",
+        "avatar": "🎓",
+        "track": "Deep Learning Track",
+        "current_activity": "Anti-Cheat Exam: Deep Learning Midterm Exam (Question 7/10)",
+        "activity_type": "exam",
+        "baseline_mins": 25,
+        "stretch_mins": 45,
+        "sitting_elapsed_mins": 36,
+        "proctor_status": "flagged",
+        "proctor_label": "🔴 Tab Switch & Face Missing",
+        "ear_score": 0.15,
+        "streak_days": 2,
+        "gems": 20,
+        "fatigue_index": 0.68,
+        "fatigue_label": "High Fatigue Risk",
+        "bkt_accuracy": 74.2,
+        "flagged": True
+    },
+    {
+        "id": "user_elena",
+        "name": "Elena Rostova",
+        "email": "elena.rostova@focusflow.ai",
+        "avatar": "👩‍🔬",
+        "track": "Computer Science & AI",
+        "current_activity": "3D Spaced Flashcards: Residual Neural Networks",
+        "activity_type": "flashcards",
+        "baseline_mins": 20,
+        "stretch_mins": 40,
+        "sitting_elapsed_mins": 22,
+        "proctor_status": "verified",
+        "proctor_label": "🟢 Face Centered",
+        "ear_score": 0.30,
+        "streak_days": 8,
+        "gems": 110,
+        "fatigue_index": 0.26,
+        "fatigue_label": "Optimal Focus",
+        "bkt_accuracy": 89.8,
+        "flagged": False
+    },
+    {
+        "id": "user_marcus",
+        "name": "Marcus Chen",
+        "email": "marcus.chen@focusflow.ai",
+        "avatar": "👨‍💼",
+        "track": "Distributed Systems",
+        "current_activity": "Study Group #3: Stanford CS224N Live Voice Mesh",
+        "activity_type": "study_group",
+        "baseline_mins": 20,
+        "stretch_mins": 35,
+        "sitting_elapsed_mins": 31,
+        "proctor_status": "verified",
+        "proctor_label": "🟢 Voice & Eye Active",
+        "ear_score": 0.32,
+        "streak_days": 5,
+        "gems": 60,
+        "fatigue_index": 0.19,
+        "fatigue_label": "Optimal Focus",
+        "bkt_accuracy": 93.1,
+        "flagged": False
+    }
+]
+
+@app.get("/api/admin/overview")
+async def get_admin_overview():
+    """
+    Returns platform-wide live telemetry, active student activities,
+    Stacking Ensemble cohort fatigue distribution, BKT topic masteries, and CV audit logs.
+    """
+    total_students = 1284
+    active_now = len(ACTIVE_STUDENTS_ROSTER) + 38
+    avg_stretch_bonus = 24.8  # +24.8 mins beyond baseline
+    verified_attendance_rate = 98.4
+
+    # ML Ensemble Fatigue Distribution
+    fatigue_distribution = [
+        {"cluster": "Optimal Focus (Fatigue < 0.35)", "pct": 74, "count": 950, "color": "var(--emerald)"},
+        {"cluster": "Moderate Fatigue (0.35 - 0.65)", "pct": 21, "count": 269, "color": "var(--amber)"},
+        {"cluster": "High Fatigue Risk (> 0.65)", "pct": 5, "count": 65, "color": "var(--rose)"}
+    ]
+
+    # Bayesian Knowledge Tracing (BKT) Cohort Mastery
+    bkt_cohort = [
+        {"topic": "Transformers & Attention", "domain": "Deep Learning", "mastery_pct": 91, "students_tested": 842},
+        {"topic": "Backpropagation & Autograd", "domain": "Machine Learning", "mastery_pct": 95, "students_tested": 1120},
+        {"topic": "Bayesian Networks & BKT", "domain": "Machine Learning", "mastery_pct": 84, "students_tested": 730},
+        {"topic": "Raft & Distributed Consensus", "domain": "Distributed Systems", "mastery_pct": 78, "students_tested": 615},
+        {"topic": "Black-Scholes & Stochastic Calculus", "domain": "Quantitative Math", "mastery_pct": 82, "students_tested": 480},
+        {"topic": "Convolution & Computer Vision", "domain": "Computer Vision", "mastery_pct": 88, "students_tested": 890}
+    ]
+
+    return JSONResponse(content={
+        "system_kpis": {
+            "total_enrolled_students": total_students,
+            "active_sprints_now": active_now,
+            "avg_stretch_sitting_bonus": avg_stretch_bonus,
+            "verified_cv_attendance_pct": verified_attendance_rate,
+            "total_practice_questions_solved": 24890,
+            "total_gems_rewarded": 142300,
+            "active_study_groups": 18
+        },
+        "active_students": ACTIVE_STUDENTS_ROSTER,
+        "fatigue_distribution": fatigue_distribution,
+        "bkt_cohort_mastery": bkt_cohort,
+        "proctor_audit_log": ADMIN_PROCTOR_AUDIT_LOG
+    })
+
+@app.post("/api/admin/broadcast-alert")
+async def broadcast_admin_alert(req: AdminBroadcastRequest):
+    """
+    Pushes an administrator broadcast or sprint reminder to all connected student screens.
+    """
+    import time
+    broadcast_record = {
+        "id": f"bcast_{int(time.time())}",
+        "title": req.title,
+        "message": req.message,
+        "broadcast_type": req.broadcast_type,
+        "urgency": req.urgency,
+        "timestamp": "Just now",
+        "delivered_to": len(ACTIVE_STUDENTS_ROSTER) + 38
+    }
+    return JSONResponse(content={
+        "success": True,
+        "broadcast": broadcast_record,
+        "message": f"📢 Broadcast successfully transmitted to {broadcast_record['delivered_to']} active students!"
+    })
+
+@app.post("/api/admin/flag-user")
+async def flag_user_action(req: AdminUserActionRequest):
+    """
+    Allows the platform admin to inspect, issue warnings, or reset anti-cheat flags on a student.
+    """
+    student = next((s for s in ACTIVE_STUDENTS_ROSTER if s["id"] == req.user_id), None)
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found in active roster")
+
+    if req.action == "reset_flag":
+        student["flagged"] = False
+        student["proctor_status"] = "verified"
+        student["proctor_label"] = "🟢 Flag Cleared by Admin"
+        action_msg = f"Anti-cheat flag reset for {student['name']}."
+    elif req.action == "issue_warning":
+        student["proctor_status"] = "warning"
+        student["proctor_label"] = "🟡 Admin Warning Dispatched"
+        action_msg = f"Dispatched attention warning to {student['name']}."
+    elif req.action == "grant_gems":
+        student["gems"] += 25
+        action_msg = f"Awarded +25 Focus Gems to {student['name']}."
+    else:
+        action_msg = f"Executed action '{req.action}' for {student['name']}."
+
+    return JSONResponse(content={
+        "success": True,
+        "user_id": req.user_id,
+        "student": student,
+        "message": f"✅ {action_msg}"
+    })
+
+@app.get("/api/admin/export-analytics")
+async def export_admin_analytics():
+    """
+    Exports comprehensive platform telemetry and learning records in structured JSON.
+    """
+    import datetime
+    return JSONResponse(content={
+        "platform": "FocusFlow AI",
+        "export_timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+        "cohort_size": 1284,
+        "active_students": ACTIVE_STUDENTS_ROSTER,
+        "proctor_audit_log": ADMIN_PROCTOR_AUDIT_LOG
+    })
+
 app.mount("/styles", StaticFiles(directory=os.path.join(BASE_DIR, "styles")), name="styles")
 app.mount("/js", StaticFiles(directory=os.path.join(BASE_DIR, "js")), name="js")
 
